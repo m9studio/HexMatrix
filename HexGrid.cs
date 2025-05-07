@@ -1,12 +1,33 @@
-﻿namespace M9Studio.HexMatrix
+﻿using System.Collections;
+using System.Diagnostics.CodeAnalysis;
+
+namespace M9Studio.HexMatrix
 {
-    public class HexGrid<T>
+    public class HexGrid<T> : IEnumerable<(HexGridPosition, T)>, IReadOnlyDictionary<HexGridPosition, T>
     {
         private T center;
         private T[,] A;
         private T[,] B;
         private T[,] C;
         private int radius;
+
+        public int Count => 1 + A.Length + B.Length + C.Length;
+        public int Radius => radius;
+
+        public T this[int x, int y, int z]
+        {
+            get => Get(x, y, z);
+            set => Set(x, y, z, value);
+        }
+        public T this[HexGridPosition position]
+        {
+            get => Get(position);
+            set => Set(position, value);
+        }
+
+
+
+
 
         public HexGrid(int radius)
         {
@@ -19,16 +40,6 @@
             }
         }
 
-        public T this[int x, int y, int z]
-        {
-            get => Get(x, y, z);
-            set => Set(x, y, z, value);
-        }
-        public T this[HexGridPosition position]
-        {
-            get => Get(position);
-            set => Set(position, value);
-        }
 
         public void Set(HexGridPosition position, T value) => Set(position.X, position.Y, position.Z, value);
         public void Set(int x, int y, int z, T value)
@@ -90,5 +101,43 @@
                 }
             }
         }
+
+
+
+
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+        public IEnumerator<(HexGridPosition, T)> GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+        public IEnumerable<HexGridPosition> Keys => throw new NotImplementedException();
+        public IEnumerable<T> Values => throw new NotImplementedException();
+        public bool ContainsKey(HexGridPosition key) => key.X > Radius || key.Y > Radius || key.Z > Radius || key.X < -Radius || key.Y < -Radius || key.Z < -Radius;
+
+        public bool TryGetValue(HexGridPosition key, [MaybeNullWhen(false)] out T value)
+        {
+            try
+            {
+                value = Get(key);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                value = default!;
+                return false;
+            }
+        }
+        IEnumerator<KeyValuePair<HexGridPosition, T>> IEnumerable<KeyValuePair<HexGridPosition, T>>.GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
+
+
+
     }
 }
