@@ -116,20 +116,16 @@ namespace M9Studio.HexMatrix
         }
         public IEnumerable<HexGridPosition> Keys => throw new NotImplementedException();
         public IEnumerable<T> Values => throw new NotImplementedException();
-        public bool ContainsKey(HexGridPosition key) => key.X > Radius || key.Y > Radius || key.Z > Radius || key.X < -Radius || key.Y < -Radius || key.Z < -Radius;
-
+        public bool ContainsKey(HexGridPosition key) => Math.Abs(key.X) <= radius && Math.Abs(key.Y) <= radius && Math.Abs(key.Z) <= radius;
         public bool TryGetValue(HexGridPosition key, [MaybeNullWhen(false)] out T value)
         {
-            try
+            if (ContainsKey(key))
             {
                 value = Get(key);
                 return true;
             }
-            catch (Exception ex)
-            {
-                value = default!;
-                return false;
-            }
+            value = default!;
+            return false;
         }
         IEnumerator<KeyValuePair<HexGridPosition, T>> IEnumerable<KeyValuePair<HexGridPosition, T>>.GetEnumerator()
         {
